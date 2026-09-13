@@ -50,7 +50,11 @@ export function buildBriefing(input: BriefingInput): Briefing {
   const commuteText = commuteParagraph(input.commute, input.emphasis);
   if (commuteText) paragraphs.push(commuteText);
   else if (input.commute.status.state === "locked") {
-    unavailable.push("Commute details are locked on this deployment; enter the passcode to include them.");
+    unavailable.push(
+      input.commute.status.lockKind === "unconfigured"
+        ? "Commute details are locked because no passcode is configured on this deployment, so this briefing has no departure time."
+        : "Commute details are locked on this deployment; enter the passcode to include them.",
+    );
   } else if (input.emphasis === "workday") {
     unavailable.push("Traffic data is unavailable, so this briefing does not include a departure time.");
   }

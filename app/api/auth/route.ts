@@ -1,4 +1,4 @@
-import { closeGate, gateEnabled, isAuthorized, openGate } from "@/lib/auth";
+import { closeGate, gateEnabled, gateMode, isAuthorized, openGate } from "@/lib/auth";
 import { jsonResponse } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   return jsonResponse({
     gateEnabled: gateEnabled(),
+    mode: gateMode(),
     authorized: await isAuthorized(),
   });
 }

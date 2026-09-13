@@ -403,10 +403,12 @@ export function SettingsScreen({
                 </>
               ) : (
                 <p>
-                  No passcode is configured, so the commute route is visible to
-                  anyone who can reach this deployment. Set
-                  COMMAND_CENTER_PASSCODE before exposing it publicly — the route
-                  identifies where you live.
+                  No passcode is configured. In development the commute route is
+                  visible; on a production deployment the gate fails closed and
+                  the route stays hidden until{" "}
+                  <code className="text-fg">COMMAND_CENTER_PASSCODE</code> is
+                  set, because a default that publishes where you live is the
+                  wrong default.
                 </p>
               )}
               <p className="mt-2">

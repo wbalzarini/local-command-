@@ -10,10 +10,37 @@ import { Lock } from "lucide-react";
  * exists — the route identifies where the user lives — because a lock with no
  * explanation reads as a paywall rather than a privacy measure.
  */
-export function PasscodeGate({ onUnlocked }: { onUnlocked: () => void }) {
+export function PasscodeGate({
+  onUnlocked,
+  kind = "passcode",
+  message,
+}: {
+  onUnlocked: () => void;
+  /** `unconfigured` means no passcode exists, so there is nothing to type. */
+  kind?: "passcode" | "unconfigured";
+  message?: string;
+}) {
   const [passcode, setPasscode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // A gate with no passcode configured cannot be opened by anyone, so offering
+  // an input would be a dead end. It explains what to set instead.
+  if (kind === "unconfigured") {
+    return (
+      <div className="flex items-start gap-2 py-2">
+        <Lock className="mt-0.5 size-4 shrink-0 text-level-moderate" aria-hidden="true" />
+        <div>
+          <p className="text-[12px] leading-snug text-muted">{message}</p>
+          <p className="mt-2 text-[11px] leading-snug text-faint">
+            Set <code className="text-fg">COMMAND_CENTER_PASSCODE</code> in the
+            deployment&apos;s environment variables and redeploy. Until then the
+            route stays hidden rather than public.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -46,9 +73,8 @@ export function PasscodeGate({ onUnlocked }: { onUnlocked: () => void }) {
       <div className="flex items-start gap-2">
         <Lock className="mt-0.5 size-4 shrink-0 text-level-unknown" aria-hidden="true" />
         <p className="text-[12px] leading-snug text-muted">
-          Commute details are protected on this deployment. The route traces the
-          way from your home to your work address, so it stays behind the
-          passcode.
+          {message ??
+            "Commute details are protected on this deployment. The route traces the way from your home to your work address, so it stays behind the passcode."}
         </p>
       </div>
 

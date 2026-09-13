@@ -187,7 +187,9 @@ function commuteCategory(commute: ModuleSnapshot<CommuteData>): StatusCategory {
       level: "unknown",
       detail:
         commute.status.state === "locked"
-          ? "Locked — enter the passcode to include the commute"
+          ? commute.status.lockKind === "unconfigured"
+            ? "Locked — no passcode configured on this deployment"
+            : "Locked — enter the passcode to include the commute"
           : "Traffic data unavailable",
       points: 0,
     };
@@ -232,7 +234,9 @@ function roadsCategory(roads: ModuleSnapshot<RoadsData>): StatusCategory {
       level: "unknown",
       detail:
         roads.status.state === "locked"
-          ? "Locked — enter the passcode to include road conditions"
+          ? roads.status.lockKind === "unconfigured"
+            ? "Locked — no passcode configured on this deployment"
+            : "Locked — enter the passcode to include road conditions"
           : "No road-condition feed configured",
       points: 0,
     };

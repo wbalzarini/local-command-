@@ -54,6 +54,12 @@ export type ModuleStatus = {
   message?: string;
   /** Last time real data arrived, for "last successful update" copy. */
   lastSuccessAt?: number;
+  /**
+   * Only set when `state` is `locked`. `passcode` means a passcode exists and
+   * can be entered; `unconfigured` means none is set, so there is nothing to
+   * enter and the operator has to configure one.
+   */
+  lockKind?: "passcode" | "unconfigured";
 };
 
 export type AlertSeverity = "critical" | "important" | "advisory" | "info";

@@ -8,6 +8,7 @@ import {
   type Settings,
 } from "../config";
 import { env } from "../env";
+import { gateMode, lockMessage } from "../auth";
 import { formatMinutes, formatTime } from "../format";
 import { fetchRoadEvents, PENNDOT_SOURCE } from "../traffic/roads";
 import type { RoadsData } from "../traffic/types";
@@ -58,14 +59,15 @@ export async function getCommute(
   const settings = request.settings ?? defaultSettings();
   const inWindow = inCommuteWindow(settings);
 
-  if (env.passcode() && !request.authorized) {
+  if (!request.authorized) {
     return {
       id: "commute",
       label: "Commute",
       data: null,
       status: {
         state: "locked",
-        message: "Enter the passcode to show your commute. The route is withheld because it identifies your home location.",
+        message: lockMessage("Your commute"),
+        lockKind: gateMode() === "unconfigured" ? "unconfigured" : "passcode",
       },
       timestamp: Date.now(),
       sources: [],
@@ -435,12 +437,16 @@ export async function getRoads(
   routes: Route[],
   authorized: boolean,
 ): Promise<ModuleSnapshot<RoadsData>> {
-  if (env.passcode() && !authorized) {
+  if (!authorized) {
     return {
       id: "roads",
       label: "Road Conditions",
       data: null,
-      status: { state: "locked", message: "Enter the passcode to show road conditions along your route." },
+      status: {
+        state: "locked",
+        message: lockMessage("Road conditions along your route"),
+        lockKind: gateMode() === "unconfigured" ? "unconfigured" : "passcode",
+      },
       timestamp: Date.now(),
       sources: [],
       alerts: [],

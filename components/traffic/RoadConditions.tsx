@@ -27,7 +27,11 @@ export function RoadConditions({
   if (roads.status.state === "locked") {
     return (
       <DashboardCard title="Road Conditions" status={roads.status} id="roads">
-        <PasscodeGate onUnlocked={onUnlocked} />
+        <PasscodeGate
+          onUnlocked={onUnlocked}
+          kind={roads.status.lockKind ?? "passcode"}
+          message={roads.status.message}
+        />
       </DashboardCard>
     );
   }

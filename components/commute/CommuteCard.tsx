@@ -30,7 +30,11 @@ export function CommuteCard({
   if (commute.status.state === "locked") {
     return (
       <DashboardCard title="Commute" status={commute.status}>
-        <PasscodeGate onUnlocked={onUnlocked} />
+        <PasscodeGate
+          onUnlocked={onUnlocked}
+          kind={commute.status.lockKind ?? "passcode"}
+          message={commute.status.message}
+        />
       </DashboardCard>
     );
   }
