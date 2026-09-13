@@ -1,0 +1,205 @@
+@import "tailwindcss";
+
+/*
+ * Trading-terminal palette. Dark by default — this app has no light mode,
+ * the same way a terminal doesn't. Green is bullish, red bearish, amber a
+ * warning, blue informational; nothing else carries meaning through colour
+ * alone, so every state also has a label or an icon.
+ */
+@theme {
+  --color-ink: oklch(0.16 0.012 260);
+  --color-surface: oklch(0.21 0.014 260);
+  --color-raised: oklch(0.25 0.016 260);
+  --color-line: oklch(0.32 0.018 260);
+  --color-line-strong: oklch(0.42 0.02 260);
+
+  --color-fg: oklch(0.96 0.004 260);
+  --color-muted: oklch(0.72 0.015 260);
+  --color-faint: oklch(0.58 0.016 260);
+
+  --color-up: oklch(0.78 0.17 155);
+  --color-up-dim: oklch(0.42 0.09 155);
+  --color-down: oklch(0.68 0.2 22);
+  --color-down-dim: oklch(0.4 0.11 22);
+  --color-warn: oklch(0.81 0.15 78);
+  --color-info: oklch(0.74 0.13 245);
+  --color-accent: oklch(0.7 0.15 275);
+
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+
+  --animate-rise: rise 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade: fade 0.22s ease-out both;
+  --animate-flash-up: flash-up 0.7s ease-out;
+  --animate-flash-down: flash-down 0.7s ease-out;
+  --animate-sweep: sweep 1.4s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 2.4s ease-out infinite;
+  --animate-slide: slide 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  /*
+   * Command Center additions.
+   *
+   * The five status levels each get a colour and a dimmed companion for fills
+   * and borders. Five rather than a good/bad pair, because "moderate" and
+   * "unknown" are both real states here and neither is a shade of the others.
+   */
+  --color-level-good: oklch(0.78 0.17 155);
+  --color-level-good-dim: oklch(0.38 0.08 155);
+  --color-level-moderate: oklch(0.81 0.15 78);
+  --color-level-moderate-dim: oklch(0.4 0.08 78);
+  --color-level-poor: oklch(0.73 0.17 45);
+  --color-level-poor-dim: oklch(0.4 0.1 45);
+  --color-level-severe: oklch(0.68 0.2 22);
+  --color-level-severe-dim: oklch(0.4 0.11 22);
+  --color-level-unknown: oklch(0.58 0.016 260);
+  --color-level-unknown-dim: oklch(0.3 0.014 260);
+
+  /* Chart ink, kept distinct from status colours so a line never reads as a state. */
+  --color-series-temp: oklch(0.8 0.14 62);
+  --color-series-pressure: oklch(0.76 0.12 245);
+  --color-series-rain: oklch(0.74 0.13 220);
+  --color-series-wind: oklch(0.76 0.1 175);
+  --color-series-cloud: oklch(0.7 0.02 260);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Price ticks flash the cell rather than the number, which is easier to track. */
+@keyframes flash-up {
+  0% { background-color: color-mix(in oklch, var(--color-up) 26%, transparent); }
+  100% { background-color: transparent; }
+}
+
+@keyframes flash-down {
+  0% { background-color: color-mix(in oklch, var(--color-down) 26%, transparent); }
+  100% { background-color: transparent; }
+}
+
+@keyframes slide {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* The live indicator next to the clock. */
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--color-level-good) 55%, transparent); }
+  70% { box-shadow: 0 0 0 7px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+@keyframes sweep {
+  0% { opacity: 0.35; }
+  50% { opacity: 1; }
+  100% { opacity: 0.35; }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-ink);
+  color: var(--color-fg);
+  /* The app is a fixed-height shell; only the content column scrolls. */
+  overscroll-behavior-y: none;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Numbers in a trading UI must not reflow as they tick. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.scroll-none::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-none {
+  scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Terminal chrome.
+ *
+ * The dashboard's density comes from hairline rules and tight type rather than
+ * from cards with big radii and shadows, so these are the two utilities doing
+ * most of the visual work.
+ */
+.hairline {
+  border-color: color-mix(in oklch, var(--color-line) 80%, transparent);
+}
+
+/* Micro label: the small uppercase type that titles every block. */
+.micro {
+  font-size: 0.625rem;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-faint);
+}
+
+.micro-bright {
+  color: var(--color-muted);
+}
+
+/* A faint grid behind the hero blocks, like a plotted background. */
+.gridlines {
+  background-image:
+    linear-gradient(to right, color-mix(in oklch, var(--color-line) 40%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--color-line) 40%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Horizontal strips (hourly, 10-day) scroll rather than wrap. */
+.strip {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+}
+
+.strip > * {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+}
+
+/*
+ * Sticky commute rail during commute hours. Sits above the content but below
+ * the header, and only ever on small screens where the module would otherwise
+ * be scrolled past at exactly the moment it matters.
+ */
+.sticky-rail {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+/* Focus ring that survives the dark palette. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-info);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
